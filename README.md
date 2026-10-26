@@ -44,7 +44,7 @@ GROQ_API_KEY=gsk_...
 | `08_embeddings.py` | Turn text into vectors and search a vector store by meaning |
 | `09_rag_chain.py` | RAG as a chain: chunk the handbook, retrieve relevant pieces, answer from them |
 | `10_rag_agent.py` | RAG as an agent: retrieval becomes a tool the agent calls only when it needs to |
-| `docs/handbook.txt` | A made-up employee handbook for "Nimbus Coffee Co.", used as the knowledge source for lessons 9 and 10 |
+| `docs/handbook.txt` | A made-up employee handbook, used as the knowledge source for lessons 9 and 10 |
 
 Run any lesson with the venv active:
 
