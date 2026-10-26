@@ -19,6 +19,8 @@ source .venv/bin/activate
 pip install -r requirements.txt
 ```
 
+The install takes a while because `sentence-transformers` (used for the RAG lessons) pulls in PyTorch. The first run of lesson 8 also downloads the embedding model (~90 MB).
+
 Create a `.env` file in the project root with your Groq API key (get one free at console.groq.com, no credit card needed):
 
 ```
@@ -39,6 +41,10 @@ GROQ_API_KEY=gsk_...
 | `05_structured.py` | Get validated Pydantic objects back instead of free text |
 | `06_agent.py` | Give the model tools and let an agent decide when to call them |
 | `07_memory.py` | Persist conversation history across turns with a checkpointer |
+| `08_embeddings.py` | Turn text into vectors and search a vector store by meaning |
+| `09_rag_chain.py` | RAG as a chain: chunk the handbook, retrieve relevant pieces, answer from them |
+| `10_rag_agent.py` | RAG as an agent: retrieval becomes a tool the agent calls only when it needs to |
+| `docs/handbook.txt` | A made-up employee handbook for "Nimbus Coffee Co.", used as the knowledge source for lessons 9 and 10 |
 
 Run any lesson with the venv active:
 
@@ -62,10 +68,16 @@ python 01_basics.py
 
 **7. Memory** – A checkpointer (`InMemorySaver`) stores history per `thread_id`, so each call only needs the new message. A new thread ID starts a fresh conversation.
 
+**8. Embeddings** – An embedding model turns text into a fixed-length vector (384 numbers for `all-MiniLM-L6-v2`) that captures meaning. A vector store keeps those vectors and returns the closest matches to a query, so "time off" finds "vacation days" with no shared keywords. The embedding model runs locally through Hugging Face, so it needs no API key (the first run downloads it).
+
+**9. RAG chain** – Retrieval-augmented generation in four steps: split the document into overlapping chunks (`RecursiveCharacterTextSplitter`), embed them into a vector store, retrieve the top `k` chunks for each question, and paste them into the prompt as context. The system prompt tells the model to answer only from that context and to say "I don't know" otherwise, which is how it handles questions the handbook doesn't cover.
+
+**10. RAG agent** – Wrapping the retriever in a `@tool` lets the agent decide when to search. It skips retrieval for small talk, and it can search more than once for a question with several parts. The tool's docstring tells the model what the handbook covers.
+
 ## Small things I learnt along the way
 
 - **Run with the venv's Python.** A `ModuleNotFoundError` usually means the script ran outside the venv. Activate it and check with `which python3`, and select the `.venv` interpreter in VS Code.
-- **Models only know their training data.** Ask about something recent and the model may guess or hallucinate. RAG is a possible fix.
+- **Models only know their training data.** Ask about something recent and the model may guess or hallucinate. RAG (lessons 8–10) is one fix.
 - **Free-tier rate limits.** A `429` error means the per-minute limit was hit. Wait a few seconds and rerun. Or limit tokens!
 
 ## Switching providers
@@ -78,7 +90,7 @@ Only `config.py` needs to change. For example, to run fully offline with [Ollama
 
 ## Lessons I will later add
 
-- [ ] RAG: document loading, chunking, embeddings, and a vector store
+- [x] RAG: document loading, chunking, embeddings, and a vector store
 - [ ] LangGraph: custom control flow, branching, human-in-the-loop
 - [ ] LangSmith: tracing and debugging runs
 - [ ] Evaluation: test sets and scoring outputs
